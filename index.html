@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sister's Birthday Bash!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7e1ff; /* A soft, festive purple */
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .floating-card {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 to-pink-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Container -->
+    <div class="max-w-4xl w-full bg-white rounded-3xl floating-card p-6 md:p-10 my-8">
+
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold text-purple-700 text-shadow">
+                Get Ready to Celebrate!
+            </h1>
+            <p class="mt-4 text-xl md:text-2xl text-purple-500 font-semibold">
+                Join us for <span id="sister-name">Sister's</span> Birthday Bash!
+            </p>
+            <div id="countdown" class="mt-6 text-3xl md:text-5xl font-extrabold text-pink-600"></div>
+        </header>
+
+        <!-- Party Details Section -->
+        <section class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-purple-50 p-6 rounded-2xl">
+                <h2 class="text-2xl font-bold text-purple-800 flex items-center mb-3">
+                    <i class="fas fa-calendar-alt text-purple-500 mr-3"></i> Details
+                </h2>
+                <p class="text-lg text-gray-700">
+                    <span class="font-semibold">Date:</span> <span id="party-date">Saturday, August 16, 2025</span>
+                </p>
+                <p class="text-lg text-gray-700">
+                    <span class="font-semibold">Time:</span> <span id="party-time">6:00 PM - 10:00 PM</span>
+                </p>
+                <p class="text-lg text-gray-700 mt-4">
+                    <span class="font-semibold">Location:</span> <span id="party-location">The Family Garden, 123 Celebration Lane</span>
+                </p>
+            </div>
+            <div class="bg-purple-50 p-6 rounded-2xl">
+                <h2 class="text-2xl font-bold text-purple-800 flex items-center mb-3">
+                    <i class="fas fa-palette text-purple-500 mr-3"></i> Theme & Notes
+                </h2>
+                <p class="text-lg text-gray-700">
+                    <span class="font-semibold">Theme:</span> <span id="party-theme">Elegant Garden Party</span>
+                </p>
+                <p class="text-lg text-gray-700 mt-4 italic">
+                    "We can't wait to celebrate with you! Please dress in semi-formal attire. Shhh, it's a surprise!"
+                </p>
+            </div>
+        </section>
+
+        <!-- RSVP Section -->
+        <section class="bg-pink-50 p-6 rounded-2xl mb-12">
+            <h2 class="text-2xl font-bold text-pink-800 flex items-center mb-4">
+                <i class="fas fa-glass-cheers text-pink-500 mr-3"></i> RSVP
+            </h2>
+            <form id="rsvp-form" class="space-y-4">
+                <div>
+                    <label for="guest-name" class="block text-gray-700 font-medium mb-1">Your Name</label>
+                    <input type="text" id="guest-name" class="w-full p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 transition-all" required>
+                </div>
+                <div>
+                    <label for="num-guests" class="block text-gray-700 font-medium mb-1">Number of Guests (including yourself)</label>
+                    <input type="number" id="num-guests" class="w-full p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 transition-all" value="1" min="1" required>
+                </div>
+                <div>
+                    <label for="dietary-notes" class="block text-gray-700 font-medium mb-1">Dietary Restrictions or Notes (optional)</label>
+                    <textarea id="dietary-notes" rows="3" class="w-full p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 transition-all"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-pink-600 text-white font-bold py-3 px-6 rounded-full hover:bg-pink-700 transition-all shadow-lg">
+                    Submit RSVP
+                </button>
+                <div id="rsvp-message" class="text-center mt-3 font-medium"></div>
+            </form>
+        </section>
+
+        <!-- Guest List Section -->
+        <section class="bg-purple-50 p-6 rounded-2xl mb-12">
+            <h2 class="text-2xl font-bold text-purple-800 flex items-center mb-4">
+                <i class="fas fa-users text-purple-500 mr-3"></i> Guest List
+            </h2>
+            <div id="guest-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p id="guest-list-loading" class="text-gray-500 text-center col-span-full">Loading guest list...</p>
+            </div>
+        </section>
+
+        <!-- Organizer Dashboard Section -->
+        <section class="bg-gray-100 p-6 rounded-2xl">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center mb-4">
+                <i class="fas fa-tools text-gray-500 mr-3"></i> Organizer Dashboard
+            </h2>
+            <div id="password-form-container">
+                <p class="text-gray-600 mb-4">Enter the password to access planning tools.</p>
+                <div class="flex space-x-2">
+                    <input type="password" id="organizer-password" placeholder="Password" class="p-3 border border-gray-300 rounded-lg flex-grow focus:ring-2 focus:ring-gray-500">
+                    <button id="password-submit" class="bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all">
+                        Access
+                    </button>
+                </div>
+            </div>
+
+            <div id="organizer-dashboard" class="hidden">
+                <div class="flex mb-4">
+                    <button id="todo-tab" class="px-6 py-2 bg-purple-200 text-purple-800 font-bold rounded-t-lg transition-all">To-Do List</button>
+                    <button id="budget-tab" class="px-6 py-2 bg-gray-200 text-gray-600 font-bold rounded-t-lg transition-all">Budget Tracker</button>
+                </div>
+
+                <div id="todo-list-content">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">To-Do List</h3>
+                    <form id="todo-form" class="flex space-x-2 mb-4">
+                        <input type="text" id="todo-item" placeholder="Add a new task" class="p-3 border border-gray-300 rounded-lg flex-grow focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="bg-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-purple-700 transition-all">
+                            Add Task
+                        </button>
+                    </form>
+                    <ul id="todo-list" class="space-y-2">
+                        <p id="todo-list-loading" class="text-gray-500 text-center">Loading to-do list...</p>
+                    </ul>
+                </div>
+
+                <div id="budget-tracker-content" class="hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Budget Tracker</h3>
+                    <form id="budget-form" class="flex space-x-2 mb-4">
+                        <input type="text" id="budget-item" placeholder="Item (e.g., Cake)" class="p-3 border border-gray-300 rounded-lg flex-grow focus:ring-2 focus:ring-purple-500" required>
+                        <input type="number" id="budget-cost" placeholder="Cost ($)" class="p-3 border border-gray-300 rounded-lg w-24 focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="bg-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-purple-700 transition-all">
+                            Add Expense
+                        </button>
+                    </form>
+                    <ul id="budget-list" class="space-y-2">
+                        <p id="budget-list-loading" class="text-gray-500 text-center">Loading budget...</p>
+                    </ul>
+                    <div class="mt-4 p-4 bg-purple-50 rounded-lg font-bold text-lg flex justify-between">
+                        <span>Total Budget:</span>
+                        <span id="total-budget-cost" class="text-green-600">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Setup
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : '';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        let userId = null;
+        let isAuthReady = false;
+
+        // Auth state listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+            } else {
+                if (!initialAuthToken) {
+                    await signInAnonymously(auth);
+                }
+            }
+            isAuthReady = true;
+            console.log("Authentication state changed. userId:", userId);
+
+            // Once authenticated, start listening for data
+            if (isAuthReady) {
+                setupRealtimeListeners();
+            }
+        });
+
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).catch(error => {
+                console.error("Custom token sign-in failed:", error);
+            });
+        }
+
+        // Countdown Timer Logic
+        const countdownEl = document.getElementById('countdown');
+        const partyDate = new Date('August 16, 2025 18:00:00').getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = partyDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if (distance < 0) {
+                clearInterval(x);
+                countdownEl.innerHTML = "The party has begun!";
+            } else {
+                countdownEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+        }, 1000);
+
+        // RSVP Form Logic
+        const rsvpForm = document.getElementById('rsvp-form');
+        const rsvpMessage = document.getElementById('rsvp-message');
+        const guestListEl = document.getElementById('guest-list');
+
+        rsvpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !userId) {
+                console.error("Auth not ready. Cannot submit RSVP.");
+                rsvpMessage.textContent = "Error: Please wait for the app to load fully.";
+                return;
+            }
+            const guestName = document.getElementById('guest-name').value;
+            const numGuests = document.getElementById('num-guests').value;
+            const dietaryNotes = document.getElementById('dietary-notes').value;
+
+            try {
+                const guestsCollection = collection(db, `/artifacts/${appId}/public/data/guests`);
+                await addDoc(guestsCollection, {
+                    name: guestName,
+                    numGuests: parseInt(numGuests, 10),
+                    dietary: dietaryNotes,
+                    timestamp: new Date()
+                });
+                rsvpMessage.textContent = "Thanks for your RSVP! See you at the party!";
+                rsvpMessage.className = "text-center mt-3 font-medium text-green-600";
+                rsvpForm.reset();
+            } catch (error) {
+                console.error("Error adding RSVP:", error);
+                rsvpMessage.textContent = "There was an error with your RSVP. Please try again.";
+                rsvpMessage.className = "text-center mt-3 font-medium text-red-600";
+            }
+        });
+
+        // Organizer Dashboard Logic
+        const organizerPasswordInput = document.getElementById('organizer-password');
+        const passwordSubmitBtn = document.getElementById('password-submit');
+        const organizerDashboard = document.getElementById('organizer-dashboard');
+        const todoTabBtn = document.getElementById('todo-tab');
+        const budgetTabBtn = document.getElementById('budget-tab');
+        const todoListContent = document.getElementById('todo-list-content');
+        const budgetTrackerContent = document.getElementById('budget-tracker-content');
+        const organizerPassword = "sisterbday"; // A simple password for this demo
+
+        passwordSubmitBtn.addEventListener('click', () => {
+            if (organizerPasswordInput.value === organizerPassword) {
+                document.getElementById('password-form-container').classList.add('hidden');
+                organizerDashboard.classList.remove('hidden');
+            } else {
+                alert('Incorrect password. Please try again.');
+            }
+        });
+
+        todoTabBtn.addEventListener('click', () => {
+            todoTabBtn.classList.replace('bg-gray-200', 'bg-purple-200');
+            todoTabBtn.classList.replace('text-gray-600', 'text-purple-800');
+            budgetTabBtn.classList.replace('bg-purple-200', 'bg-gray-200');
+            budgetTabBtn.classList.replace('text-purple-800', 'text-gray-600');
+            todoListContent.classList.remove('hidden');
+            budgetTrackerContent.classList.add('hidden');
+        });
+
+        budgetTabBtn.addEventListener('click', () => {
+            budgetTabBtn.classList.replace('bg-gray-200', 'bg-purple-200');
+            budgetTabBtn.classList.replace('text-gray-600', 'text-purple-800');
+            todoTabBtn.classList.replace('bg-purple-200', 'bg-gray-200');
+            todoTabBtn.classList.replace('text-purple-800', 'text-gray-600');
+            budgetTrackerContent.classList.remove('hidden');
+            todoListContent.classList.add('hidden');
+        });
+
+        // Realtime Data Listeners
+        const setupRealtimeListeners = () => {
+            // Guests Listener
+            const guestsCollection = collection(db, `/artifacts/${appId}/public/data/guests`);
+            onSnapshot(guestsCollection, (snapshot) => {
+                guestListEl.innerHTML = '';
+                if (snapshot.empty) {
+                    guestListEl.innerHTML = '<p class="text-gray-500 col-span-full">No RSVPs yet. Be the first!</p>';
+                } else {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const guestCard = `
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-pink-200">
+                                <h4 class="font-bold text-pink-700">${data.name}</h4>
+                                <p class="text-sm text-gray-600">Attending: ${data.numGuests} people</p>
+                                ${data.dietary ? `<p class="text-xs text-gray-500 italic mt-1">Notes: ${data.dietary}</p>` : ''}
+                            </div>
+                        `;
+                        guestListEl.innerHTML += guestCard;
+                    });
+                }
+            });
+
+            // To-Do List Listener
+            const todoCollection = collection(db, `/artifacts/${appId}/public/data/todo`);
+            onSnapshot(todoCollection, (snapshot) => {
+                const todoList = document.getElementById('todo-list');
+                todoList.innerHTML = '';
+                if (snapshot.empty) {
+                    todoList.innerHTML = '<p class="text-gray-500 text-center">No tasks added yet!</p>';
+                } else {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const taskEl = document.createElement('li');
+                        taskEl.className = 'flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-purple-200';
+                        taskEl.innerHTML = `
+                            <div class="flex items-center">
+                                <input type="checkbox" data-id="${doc.id}" ${data.completed ? 'checked' : ''} class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span class="${data.completed ? 'line-through text-gray-500' : 'text-gray-800'}">${data.task}</span>
+                            </div>
+                            <button data-id="${doc.id}" class="delete-todo text-red-400 hover:text-red-600 transition-all">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        `;
+                        todoList.appendChild(taskEl);
+                    });
+
+                    // Add event listeners for new elements
+                    todoList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.addEventListener('change', async (e) => {
+                            const taskId = e.target.dataset.id;
+                            const taskRef = doc(db, `/artifacts/${appId}/public/data/todo/${taskId}`);
+                            await updateDoc(taskRef, { completed: e.target.checked });
+                        });
+                    });
+                    todoList.querySelectorAll('.delete-todo').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const taskId = e.target.closest('button').dataset.id;
+                            const taskRef = doc(db, `/artifacts/${appId}/public/data/todo/${taskId}`);
+                            await deleteDoc(taskRef);
+                        });
+                    });
+                }
+            });
+
+            // Budget Tracker Listener
+            const budgetCollection = collection(db, `/artifacts/${appId}/public/data/budget`);
+            onSnapshot(budgetCollection, (snapshot) => {
+                const budgetList = document.getElementById('budget-list');
+                const totalCostEl = document.getElementById('total-budget-cost');
+                budgetList.innerHTML = '';
+                let totalCost = 0;
+                if (snapshot.empty) {
+                    budgetList.innerHTML = '<p class="text-gray-500 text-center">No expenses added yet!</p>';
+                } else {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const cost = parseFloat(data.cost);
+                        totalCost += cost;
+                        const budgetItem = `
+                            <li class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-purple-200">
+                                <span class="text-gray-800">${data.item}</span>
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-bold text-gray-700">$${cost.toFixed(2)}</span>
+                                    <button data-id="${doc.id}" class="delete-budget text-red-400 hover:text-red-600 transition-all">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        `;
+                        budgetList.innerHTML += budgetItem;
+                    });
+                    totalCostEl.textContent = `$${totalCost.toFixed(2)}`;
+                }
+                budgetList.querySelectorAll('.delete-budget').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const budgetId = e.target.closest('button').dataset.id;
+                        const budgetRef = doc(db, `/artifacts/${appId}/public/data/budget/${budgetId}`);
+                        await deleteDoc(budgetRef);
+                    });
+                });
+            });
+        };
+
+        // To-Do Form Submission
+        const todoForm = document.getElementById('todo-form');
+        todoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const todoItem = document.getElementById('todo-item').value;
+            try {
+                await addDoc(collection(db, `/artifacts/${appId}/public/data/todo`), {
+                    task: todoItem,
+                    completed: false,
+                    timestamp: new Date()
+                });
+                todoForm.reset();
+            } catch (error) {
+                console.error("Error adding todo item:", error);
+            }
+        });
+
+        // Budget Form Submission
+        const budgetForm = document.getElementById('budget-form');
+        budgetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const budgetItem = document.getElementById('budget-item').value;
+            const budgetCost = document.getElementById('budget-cost').value;
+            try {
+                await addDoc(collection(db, `/artifacts/${appId}/public/data/budget`), {
+                    item: budgetItem,
+                    cost: parseFloat(budgetCost),
+                    timestamp: new Date()
+                });
+                budgetForm.reset();
+            } catch (error) {
+                console.error("Error adding budget item:", error);
+            }
+        });
+    </script>
+</body>
+</html>
